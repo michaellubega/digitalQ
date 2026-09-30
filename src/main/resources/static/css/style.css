@@ -1,0 +1,73 @@
+/* digitalQ Custom Styles */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+}
+
+.btn {
+    border-radius: 5px;
+}
+
+.display-4 {
+    font-size: 4rem;
+    font-weight: 700;
+}
+
+/* Token Status Animations */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.alert-success {
+    animation: pulse 2s infinite;
+}
+
+/* Table Styles */
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* Form Styles */
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* QR Code Container */
+.qr-container {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+/* Stats Cards */
+.card .display-4 {
+    font-size: 2.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .display-4 {
+        font-size: 2.5rem;
+    }
+
+    .navbar-nav {
+        flex-direction: row !important;
+    }
+}
