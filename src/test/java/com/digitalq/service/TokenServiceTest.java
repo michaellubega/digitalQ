@@ -136,6 +136,8 @@ class TokenServiceTest {
         Token calledToken = Token.builder()
                 .id(1L)
                 .tokenNumber("A-001")
+                .customerName("John Doe")
+                .counterId(1L)
                 .status(Token.TokenStatus.CALLED)
                 .build();
 
@@ -189,8 +191,8 @@ class TokenServiceTest {
 
     @Test
     void getPosition_FirstInQueue() {
-        Token token1 = Token.builder().id(1L).tokenNumber("A-001").status(Token.TokenStatus.WAITING).build();
-        Token token2 = Token.builder().id(2L).tokenNumber("A-002").status(Token.TokenStatus.WAITING).build();
+        Token token1 = Token.builder().id(1L).tokenNumber("A-001").counterId(1L).status(Token.TokenStatus.WAITING).build();
+        Token token2 = Token.builder().id(2L).tokenNumber("A-002").counterId(1L).status(Token.TokenStatus.WAITING).build();
         List<Token> waitingTokens = Arrays.asList(token1, token2);
 
         when(tokenRepository.findByTokenNumber("A-001")).thenReturn(Optional.of(token1));
@@ -203,8 +205,8 @@ class TokenServiceTest {
 
     @Test
     void getPosition_SecondInQueue() {
-        Token token1 = Token.builder().id(1L).tokenNumber("A-001").status(Token.TokenStatus.WAITING).build();
-        Token token2 = Token.builder().id(2L).tokenNumber("A-002").status(Token.TokenStatus.WAITING).build();
+        Token token1 = Token.builder().id(1L).tokenNumber("A-001").counterId(1L).status(Token.TokenStatus.WAITING).build();
+        Token token2 = Token.builder().id(2L).tokenNumber("A-002").counterId(1L).status(Token.TokenStatus.WAITING).build();
         List<Token> waitingTokens = Arrays.asList(token1, token2);
 
         when(tokenRepository.findByTokenNumber("A-002")).thenReturn(Optional.of(token2));

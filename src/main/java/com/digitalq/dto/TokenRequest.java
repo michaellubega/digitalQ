@@ -1,6 +1,7 @@
 package com.digitalq.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -11,6 +12,6 @@ public class TokenRequest {
     @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
     private String customerName;
 
-    @NotBlank(message = "Counter selection is required")
+    @NotNull(message = "Counter selection is required")
     private Long counterId;
 }

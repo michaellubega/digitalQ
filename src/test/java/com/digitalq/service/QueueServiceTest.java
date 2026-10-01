@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -96,14 +97,14 @@ class QueueServiceTest {
 
         queueService.notifyQueueUpdate(1L);
 
-        verify(messagingTemplate).convertAndSend(eq("/topic/queue/1"), any());
+        verify(messagingTemplate).convertAndSend(eq("/topic/queue/1"), any(Object.class));
     }
 
     @Test
     void notifyTokenCalled_SendsMessage() {
         queueService.notifyTokenCalled("A-001");
 
-        verify(messagingTemplate).convertAndSend("/topic/token/A-001", "CALLED");
+        verify(messagingTemplate).convertAndSend(eq("/topic/token/A-001"), eq("CALLED"));
     }
 
     @Test

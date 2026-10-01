@@ -47,6 +47,7 @@ class TokenControllerTest {
     private QueueService queueService;
 
     @Test
+    @WithMockUser
     void customerHome_ReturnsIndexPage() throws Exception {
         Counter counter = Counter.builder()
                 .id(1L)
@@ -64,6 +65,7 @@ class TokenControllerTest {
     }
 
     @Test
+    @WithMockUser
     void createToken_Success() throws Exception {
         TokenRequest request = new TokenRequest();
         request.setCustomerName("John Doe");
@@ -94,6 +96,7 @@ class TokenControllerTest {
     }
 
     @Test
+    @WithMockUser
     void createToken_InvalidName() throws Exception {
         TokenRequest request = new TokenRequest();
         request.setCustomerName("A");
@@ -107,6 +110,7 @@ class TokenControllerTest {
     }
 
     @Test
+    @WithMockUser
     void getTokenStatus_Success() throws Exception {
         Token token = Token.builder()
                 .id(1L)
@@ -129,6 +133,7 @@ class TokenControllerTest {
     }
 
     @Test
+    @WithMockUser
     void getTokenStatus_NotFound() throws Exception {
         when(tokenService.findByTokenNumber("Z-999")).thenReturn(Optional.empty());
 
@@ -138,6 +143,7 @@ class TokenControllerTest {
     }
 
     @Test
+    @WithMockUser
     void tokenPage_Success() throws Exception {
         Token token = Token.builder()
                 .id(1L)
@@ -160,6 +166,7 @@ class TokenControllerTest {
     }
 
     @Test
+    @WithMockUser
     void tokenPage_NotFound() throws Exception {
         when(tokenService.findByTokenNumber("Z-999")).thenReturn(Optional.empty());
 

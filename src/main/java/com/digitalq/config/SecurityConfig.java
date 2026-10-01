@@ -24,6 +24,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfig {
 
     private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${digitalq.admin.username:admin}")
     private String adminUsername;
@@ -86,7 +87,7 @@ public class SecurityConfig {
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService());
-        provider.setPasswordEncoder(passwordEncoder());
+        provider.setPasswordEncoder(passwordEncoder);
         return provider;
     }
 
@@ -102,11 +103,6 @@ public class SecurityConfig {
                                 "ROLE_" + user.getRole().name()))
                 ))
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
     @Bean

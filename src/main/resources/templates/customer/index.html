@@ -37,7 +37,7 @@
                                     <option value="" selected disabled>Select a service</option>
                                     <option th:each="counter : ${counters}"
                                             th:value="${counter.id}"
-                                            th:text="${counter.name} - ${counter.serviceType}">
+                                            th:text="${counter.name + ' - ' + counter.serviceType}">
                                     </option>
                                 </select>
                             </div>
