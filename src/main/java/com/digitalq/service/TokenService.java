@@ -43,7 +43,17 @@ public class TokenService {
                 .expiresAt(now.plus(tokenExpiryMinutes, ChronoUnit.MINUTES))
                 .build();
 
-        return tokenRepository.save(token);
+        Token saved = tokenRepository.save(token);
+
+        // Auto-assign if counter is free (no current token)
+        if (counter.getCurrentToken() == null && !counter.isPaused()) {
+            saved.setStatus(Token.TokenStatus.CALLED);
+            saved = tokenRepository.save(saved);
+            counter.setCurrentToken(saved.getTokenNumber());
+            counterRepository.save(counter);
+        }
+
+        return saved;
     }
 
     private String generateTokenNumber(Long counterId) {
@@ -126,6 +136,39 @@ public class TokenService {
         Counter counter = counterRepository.findById(token.getCounterId()).orElse(null);
         if (counter != null && token.getTokenNumber().equals(counter.getCurrentToken())) {
             counter.setCurrentToken(null);
+            counterRepository.save(counter);
+        }
+
+        return saved;
+    }
+
+    @Transactional
+    public Token finishCurrentToken(Long counterId) {
+        Counter counter = counterRepository.findById(counterId)
+                .orElseThrow(() -> new IllegalArgumentException("Counter not found: " + counterId));
+
+        if (counter.getCurrentToken() == null) {
+            throw new IllegalStateException("No token currently assigned to this counter");
+        }
+
+        Token token = tokenRepository.findByTokenNumber(counter.getCurrentToken())
+                .orElseThrow(() -> new IllegalArgumentException("Token not found: " + counter.getCurrentToken()));
+
+        token.setStatus(Token.TokenStatus.SERVED);
+        token.setServedAt(LocalDateTime.now());
+        Token saved = tokenRepository.save(token);
+
+        // Clear current token on counter
+        counter.setCurrentToken(null);
+        counterRepository.save(counter);
+
+        // Auto-assign next waiting token if available
+        List<Token> waitingTokens = tokenRepository.findWaitingTokensByCounter(counterId);
+        if (!waitingTokens.isEmpty() && !counter.isPaused()) {
+            Token nextToken = waitingTokens.get(0);
+            nextToken.setStatus(Token.TokenStatus.CALLED);
+            tokenRepository.save(nextToken);
+            counter.setCurrentToken(nextToken.getTokenNumber());
             counterRepository.save(counter);
         }
 

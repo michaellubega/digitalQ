@@ -40,6 +40,12 @@ public class StaffController {
         if (counter != null) {
             List<Token> waitingTokens = tokenService.findWaitingTokens(counter.getId());
             model.addAttribute("waitingTokens", waitingTokens);
+
+            // Get current customer name if there's a current token
+            if (counter.getCurrentToken() != null) {
+                tokenService.findByTokenNumber(counter.getCurrentToken())
+                        .ifPresent(token -> model.addAttribute("currentCustomerName", token.getCustomerName()));
+            }
         }
 
         return "staff/dashboard";
@@ -71,6 +77,37 @@ public class StaffController {
         try {
             Token token = tokenService.serveToken(tokenId);
             queueService.notifyQueueUpdate(token.getCounterId());
+            queueService.notifyAdminStatsUpdate();
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("tokenNumber", token.getTokenNumber());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    @PostMapping("/staff/finish")
+    @ResponseBody
+    public ResponseEntity<?> finishToken(Authentication authentication) {
+        try {
+            Long userId = userService.findByUsername(authentication.getName())
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"))
+                    .getId();
+
+            Counter counter = userService.getStaffCounter(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("No counter assigned"));
+
+            if (counter.getCurrentToken() == null) {
+                throw new IllegalStateException("No token currently assigned");
+            }
+
+            Token token = tokenService.finishCurrentToken(counter.getId());
+            queueService.notifyQueueUpdate(counter.getId());
             queueService.notifyAdminStatsUpdate();
 
             Map<String, Object> response = new HashMap<>();

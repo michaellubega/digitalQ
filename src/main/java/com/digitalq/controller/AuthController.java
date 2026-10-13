@@ -23,18 +23,6 @@ public class AuthController {
         return "login";
     }
 
-    @PostMapping("/login")
-    public String loginRedirect(Authentication authentication) {
-        if (authentication != null && authentication.isAuthenticated()) {
-            if (authentication.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-                return "redirect:/admin";
-            }
-            return "redirect:/staff";
-        }
-        return "redirect:/login?error";
-    }
-
     @GetMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

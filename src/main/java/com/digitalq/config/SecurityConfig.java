@@ -48,16 +48,24 @@ public class SecurityConfig {
                     "/images/**",
                     "/webjars/**",
                     "/h2-console/**",
-                    "/error"
+                    "/error",
+                    "/favicon.ico"
                 ).permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/staff/**").hasRole("STAFF")
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
             )
             .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/admin", true)
+                .successHandler((request, response, authentication) -> {
+                    if (authentication.getAuthorities().stream()
+                            .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+                        response.sendRedirect("/admin");
+                    } else {
+                        response.sendRedirect("/staff");
+                    }
+                })
                 .failureUrl("/login?error")
                 .permitAll()
             )

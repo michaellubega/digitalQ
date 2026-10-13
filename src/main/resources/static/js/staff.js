@@ -49,24 +49,37 @@ function serveToken(tokenId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            document.getElementById('verifyResult').innerHTML = `
-                <div class="alert alert-success">
-                    <h6>Token Served</h6>
-                    <p class="mb-0">Token <strong>${data.tokenNumber}</strong> has been served.</p>
-                </div>
-            `;
-            // Refresh queue after 1 second
-            setTimeout(() => location.reload(), 1000);
+            location.reload();
         } else {
-            document.getElementById('verifyResult').innerHTML = `
-                <div class="alert alert-danger">${data.error}</div>
-            `;
+            alert(data.error || 'Failed to serve token');
         }
     })
     .catch(error => {
-        document.getElementById('verifyResult').innerHTML = `
-            <div class="alert alert-danger">Network error. Please try again.</div>
-        `;
+        alert('Network error. Please try again.');
+    });
+}
+
+function finishToken() {
+    if (!confirm('Are you sure you want to finish this token?')) {
+        return;
+    }
+
+    fetch('/staff/finish', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert(data.error || 'Failed to finish token');
+        }
+    })
+    .catch(error => {
+        alert('Network error. Please try again.');
     });
 }
 
@@ -82,15 +95,7 @@ function callNextToken() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Show notification
-            const resultDiv = document.getElementById('verifyResult');
-            resultDiv.innerHTML = `
-                <div class="alert alert-info">
-                    <h6>Next Token Called</h6>
-                    <p class="mb-0">Token <strong>${data.tokenNumber}</strong> - ${data.customerName}</p>
-                </div>
-            `;
-            setTimeout(() => location.reload(), 1000);
+            location.reload();
         } else {
             alert(data.error || 'No waiting tokens');
         }
